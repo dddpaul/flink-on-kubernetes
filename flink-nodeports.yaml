@@ -9,6 +9,5 @@ spec:
     nodePort: 30000
     port: 8081
   selector:
-    app: basic-example
     component: jobmanager
     type: flink-native-kubernetes

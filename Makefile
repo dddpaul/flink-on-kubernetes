@@ -15,11 +15,12 @@ load-minio:
 	@docker pull minio/minio:latest
 	@kind load docker-image minio/minio:latest --name ${CLUSTER} --nodes ${CLUSTER}-worker &
 
-load-basic:
+load-jobs:
 	@docker pull flink:1.20-java17
-	@kind load docker-image flink:1.20-java17 --name ${CLUSTER} --nodes ${CLUSTER}-worker
+	@kind load docker-image flink:1.20-java17 --name ${CLUSTER} --nodes ${CLUSTER}-worker &
+	@kind load docker-image decodable-examples/hello-world-job:1.0 --name ${CLUSTER} --nodes ${CLUSTER}-worker
 
-load: load-flink load-minio load-basic
+load: load-flink load-minio load-jobs
 
 helm:
 	@helm repo add flink-operator-repo https://downloads.apache.org/flink/flink-kubernetes-operator-1.12.0/
@@ -35,6 +36,9 @@ install: helm install-flink install-minio
 
 basic:
 	@kubectl apply -f flink/basic.yaml
+
+custom:
+	@kubectl apply -f flink/custom-job.yaml
 
 uninstall:
 	@helm uninstall ${HELM_FLINK_NAME}
