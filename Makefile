@@ -6,6 +6,12 @@ cluster:
 	@kubectl cluster-info --context kind-${CLUSTER}
 	@kubectl create -f https://github.com/jetstack/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 
+load-flink:
+	@docker pull ghcr.io/apache/flink-kubernetes-operator:0d40e65
+	@kind load docker-image ghcr.io/apache/flink-kubernetes-operator:0d40e65 --name ${CLUSTER} --nodes ${CLUSTER}-worker
+
+load: load-flink
+
 helm:
 	@helm repo add flink-operator-repo https://downloads.apache.org/flink/flink-kubernetes-operator-1.12.0/
 	@helm repo update
@@ -18,7 +24,6 @@ install: helm install-flink
 uninstall:
 	@helm uninstall ${HELM_FLINK_NAME}
 	
-
 destroy:
 	@kind delete cluster --name ${CLUSTER}
 
