@@ -4,6 +4,7 @@ HELM_FLINK_NAME=flink
 cluster:
 	@kind create cluster --name ${CLUSTER} --config kind-cluster.yaml
 	@kubectl cluster-info --context kind-${CLUSTER}
+	@kubectl apply -f flink-nodeports.yaml
 	@kubectl create -f https://github.com/jetstack/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 
 load-flink:
