@@ -10,7 +10,11 @@ load-flink:
 	@docker pull ghcr.io/apache/flink-kubernetes-operator:0d40e65
 	@kind load docker-image ghcr.io/apache/flink-kubernetes-operator:0d40e65 --name ${CLUSTER} --nodes ${CLUSTER}-worker
 
-load: load-flink
+load-minio:
+	@docker pull minio/minio:latest
+	@kind load docker-image minio/minio:latest --name ${CLUSTER} --nodes ${CLUSTER}-worker
+
+load: load-flink load-minio
 
 helm:
 	@helm repo add flink-operator-repo https://downloads.apache.org/flink/flink-kubernetes-operator-1.12.0/
@@ -19,7 +23,10 @@ helm:
 install-flink:
 	@helm upgrade -i ${HELM_FLINK_NAME} flink-operator-repo/flink-kubernetes-operator -f helm-values.yaml 
 
-install: helm install-flink
+install-minio:
+	@kubectl apply -f storage/
+
+install: helm install-flink install-minio
 
 uninstall:
 	@helm uninstall ${HELM_FLINK_NAME}
