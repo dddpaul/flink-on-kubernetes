@@ -9,11 +9,11 @@ cluster:
 
 load-flink:
 	@docker pull ghcr.io/apache/flink-kubernetes-operator:0d40e65
-	@kind load docker-image ghcr.io/apache/flink-kubernetes-operator:0d40e65 --name ${CLUSTER} --nodes ${CLUSTER}-worker
+	@kind load docker-image ghcr.io/apache/flink-kubernetes-operator:0d40e65 --name ${CLUSTER} --nodes ${CLUSTER}-worker &
 
 load-minio:
 	@docker pull minio/minio:latest
-	@kind load docker-image minio/minio:latest --name ${CLUSTER} --nodes ${CLUSTER}-worker
+	@kind load docker-image minio/minio:latest --name ${CLUSTER} --nodes ${CLUSTER}-worker &
 
 load-basic:
 	@docker pull flink:1.20-java17
