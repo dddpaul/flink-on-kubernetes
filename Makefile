@@ -57,13 +57,14 @@ custom:
 uninstall-kafka:
 	@kubectl -n ${KAFKA_NAMESPACE} delete $(kubectl get strimzi -o name -n kafka)
 	@kubectl delete pvc -n ${KAFKA_NAMESPACE} -l strimzi.io/name=my-cluster-kafka 
+	@kubectl -n ${KAFKA_NAMESPACE} delete -f kafka/kafka-operator.yaml
 	@kubectl delete namespace ${KAFKA_NAMESPACE}
 
 uninstall-jobs:
 	@kubectl delete --ignore-not-found=true FlinkDeployment basic-example
 	@kubectl delete --ignore-not-found=true FlinkDeployment custom-job
 
-uninstall: uninstall-jobs
+uninstall: uninstall-kafka uninstall-jobs
 	@helm uninstall ${HELM_FLINK_NAME}
 	
 destroy:
