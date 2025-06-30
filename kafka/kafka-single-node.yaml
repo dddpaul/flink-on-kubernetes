@@ -35,6 +35,11 @@ spec:
         port: 9092
         type: internal
         tls: false
+        configuration:
+          brokers:
+            - broker: 0
+              advertisedHost: 172.18.0.3
+              advertisedPort: 30100
       - name: tls
         port: 9093
         type: internal

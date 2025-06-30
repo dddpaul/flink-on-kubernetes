@@ -42,6 +42,7 @@ install-minio:
 
 install-kafka:
 	@kubectl create namespace ${KAFKA_NAMESPACE}
+	@kubectl apply -f flink-nodeports.yaml
 	@kubectl create -n ${KAFKA_NAMESPACE} -f kafka/kafka-operator.yaml
 	@kubectl apply -n ${KAFKA_NAMESPACE} -f kafka/kafka-single-node.yaml 
 	@kubectl wait ${KAFKA_NAMESPACE}/my-cluster -n ${KAFKA_NAMESPACE} --for=condition=Ready --timeout=300s 
@@ -55,7 +56,7 @@ custom:
 	@kubectl apply -f flink/custom-job.yaml
 
 uninstall-kafka:
-	@kubectl -n ${KAFKA_NAMESPACE} delete $(kubectl get strimzi -o name -n kafka)
+	@kubectl -n ${KAFKA_NAMESPACE} delete `kubectl get strimzi -o name -n kafka`
 	@kubectl delete pvc -n ${KAFKA_NAMESPACE} -l strimzi.io/name=my-cluster-kafka 
 	@kubectl -n ${KAFKA_NAMESPACE} delete -f kafka/kafka-operator.yaml
 	@kubectl delete namespace ${KAFKA_NAMESPACE}
@@ -75,3 +76,13 @@ curl:
 
 resource-capacity:
 	kubectl resource-capacity -u -p -n default -l "app.kubernetes.io/instance=flink" --pod-count
+
+goflow-producer:
+	@docker ps -a -q -f name=^goflow-producer$ | xargs -r docker rm -f
+	@docker run --name goflow-producer --net kind -p 2055:2055/udp -d netsampler/goflow2:v2.2.3 -transport kafka -transport.kafka.brokers 172.18.0.3:30100 -transport.kafka.topic flow-messages
+
+goflow-consumer:
+	@docker ps -a -q -f name=^goflow-consumer$ | xargs -r docker rm -f
+	@docker run --name goflow-consumer --net kind -d quay.io/strimzi/kafka:0.46.1-kafka-4.0.0 bin/kafka-console-consumer.sh --bootstrap-server 172.18.0.3:30100 --topic flow-messages --from-beginning
+
+goflow: goflow-producer goflow-consumer
