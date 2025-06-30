@@ -11,3 +11,17 @@ spec:
   selector:
     component: jobmanager
     type: flink-native-kubernetes
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-nodeports
+spec:
+  type: NodePort
+  ports:
+  - name: tcp
+    nodePort: 30100
+    port: 9092
+  selector:
+    app.kubernetes.io/name: kafka
