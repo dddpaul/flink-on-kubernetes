@@ -54,7 +54,11 @@ basic:
 custom:
 	@kubectl apply -f flink/custom-job.yaml
 
-uninstall:
+uninstall-jobs:
+	@kubectl delete --ignore-not-found=true FlinkDeployment basic-example
+	@kubectl delete --ignore-not-found=true FlinkDeployment custom-job
+
+uninstall: uninstall-jobs
 	@helm uninstall ${HELM_FLINK_NAME}
 	
 destroy:
